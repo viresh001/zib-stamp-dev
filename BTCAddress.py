@@ -5,19 +5,17 @@ import urllib.request
 import hmac
 import haslib
 
-class Connect:
-	__username = ''
-	__api_key = ''
-	__api_secret = ''
+class BTCAddress:
 	__nonce_v = ''
 	__encode_type = 'utf-8'
 
-	def __init__(self, username, api_key, api_secret):
-		self.__username = username
-		self.__api_key = api_key
-		self.__api_secret = api_secret
+	def __init__(self):
 
 	def GenerateAddress(self, data):
+		e_data = data.encode(self.__encode_type)
+		hash = haslib.sha256(e_data)
+		hex_digest = hash.hex_digest()
+		print(hex_digest)
 		#https://en.bitcoin.it/wiki/Technical_background_of_Bitcoin_addresses#How_to_create_Bitcoin_Address
 		#hash data using sha256
 		#hash the hash with ripemd160
