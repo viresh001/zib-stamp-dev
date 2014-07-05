@@ -23,6 +23,11 @@ class BTCAddress:
 		#checksum - first 4 bytes of sha256(sha256(vhash)) is added to the end
 		#convert to base58
 
+		#>>> import hashlib
+#h = hashlib.new('ripemd160')
+#h.update(b"Rosetta Code")
+#h.hexdigest()
+
 
 	def __nonce(self):
 		self.__nonce_v = '{:.10f}'.format(time.time() * 1000).split('.')[0]
