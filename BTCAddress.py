@@ -11,6 +11,16 @@ class BTCAddress:
 
 	def __init__(self):
 
+	
+
+    def __get-timestamp(self):
+    	return "time"
+
+	def __nonce(self):
+		self.__nonce_v = '{:.10f}'.format(time.time() * 1000).split('.')[0]
+		print("nonce: " + self.__nonce_v)
+
+
 	def GenerateAddress(self, data):
 		e_data = data.encode(self.__encode_type)
 		hash = haslib.sha256(e_data).hexdigest()
@@ -21,20 +31,3 @@ class BTCAddress:
 		vhash.update(hash)
 
 		print(vhash.hexdigest())
-
-		#https://en.bitcoin.it/wiki/Technical_background_of_Bitcoin_addresses#How_to_create_Bitcoin_Address
-		#hash data using sha256
-		#verion byte (0x00) is added to the beginning (CONCAT)
-		#checksum - first 4 bytes of sha256(sha256(vhash)) is added to the end
-		#convert to base58
-
-		#>>> import hashlib
-#h = hashlib.new('ripemd160')
-#h.update(b"Rosetta Code")
-#h.hexdigest()
-
-
-	def __nonce(self):
-		self.__nonce_v = '{:.10f}'.format(time.time() * 1000).split('.')[0]
-		print("nonce: " + self.__nonce_v)
-
