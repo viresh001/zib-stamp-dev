@@ -1,10 +1,11 @@
+import os
+import sys, getopt
 import time
-import json
+import binascii, ecdsa, hashlib
+
 import urllib.parse
 import urllib.request
-import hmac
-import hashlib
-import ecdsa
+
 
 
 class BTCAddress:
@@ -20,11 +21,13 @@ class BTCAddress:
         print("nonce: " + self.__nonce_v)
 
     def __get_timestamp(self):
-        print("__get_timestamp")
+        now = time.time()
+        return time.strftime('%Y%m%d%H%M%S', time.gmtime(now)) + ('%03d' % int((now-int(now)) *1000))
 
 
     def generate_address(self, data):
-        e_data = data.encode(self.__encode_type)
+        ts_data =  data + self.__get_timestamp();
+        e_data = ts_data.encode(self.__encode_type)
         hash = hashlib.sha256(e_data).hexdigest()
 
         print(hash)
