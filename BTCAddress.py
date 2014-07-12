@@ -36,7 +36,7 @@ class BTCAddress:
     def __get_privatekey(self, data):
         return int(hashlib.sha256(data).hexdigest(), 16)
 
-    def __base58_check_encoding(self, v):
+    def __base58_check_encoding2(self, v):
         alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
         iseq = lambda s: s
         bseq = bytes
@@ -59,30 +59,15 @@ class BTCAddress:
 
         return (result + alphabet[acc] + alphabet[0] * (origlen - newlen))[::-1]
 
-    def __base58_encoding2(self, v):
-        alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+    def __base58_check_encoding(self, v):
         l = []
         while v > 0:
             v, r = divmod(v, 58)
-            l.insert(0,(alphabet[r]))
-        return ''.join(l)
-
-    def __base58_check_encoding2(self, v):
-        res = self.__base58_encoding2(int(b'0x' + binascii.hexlify(v.encode(self.__encode_type)), 16))
-        pad = 0
-        for c in v:
-            if c == chr(0):
-                pad += 1
-            else:
-                break
-
-        return self.__b58_digits[0] * pad + res
-
-
-
+            l.insert(0,(self.__b58_digits[r]))
+        return self.__b58_digits[0] + ''.join(l)
 
     def generate_address(self, data):
-        ts_data = data #+ self.__get_timestamp();
+        ts_data = data + self.__get_timestamp();
         e_data = ts_data.encode(self.__encode_type)
         private_key = self.__get_privatekey(e_data)
 
@@ -102,8 +87,11 @@ class BTCAddress:
 
         pubkey_007 = str(int(pubkey_006, 16))
 
-        btc_address = self.__base58_check_encoding(pubkey_007)
+
+
+        btc_address = self.__base58_check_encoding(int(pubkey_006, 16))
         btc_address2 = self.__base58_check_encoding2(pubkey_007)
+
 
         print(pko.to_string())
         print(pubkey_001)
@@ -115,12 +103,3 @@ class BTCAddress:
         print(pubkey_007)
         print(btc_address)
         print(btc_address2)
-
-        #1CGzPKrbiBdbpwzAWyWDKyEXfmWuxs9Aeq
-        #BsFAFTevmeJXLuqhKhhyGxvtxgCcVZshh
-
-
-    # vhash = hashlib.new('ripemd160')
-    # vhash.update(hash)
-
-    # print(vhash.hexdigest())
