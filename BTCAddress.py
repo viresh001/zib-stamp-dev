@@ -76,7 +76,7 @@ class BTCAddress():
 
         return int(pubkey_006, 16)
 
-    def get_btc_address(self, data):
+    def make_btc_address(self, data):
         ts_data = data  + self.timestamp
         e_data = ts_data.encode(self.__encode_type)
         private_key = self.__make_privatekey(e_data)
@@ -85,7 +85,7 @@ class BTCAddress():
 
         return self.__base58_encode(hash_key)
 
-    def get_btc_address2(self, data):
+    def make_btc_address2(self, data):
         ts_data = data  + self.timestamp
         e_data = ts_data.encode(self.__encode_type)
         private_key = self.__make_privatekey(e_data)

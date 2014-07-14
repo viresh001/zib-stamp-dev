@@ -9,8 +9,8 @@ class BTCAddressTest(unittest.TestCase):
         test_count=0
         while test_count < self.count_max:
             test_addy = BTCAddress.BTCAddress()
-            btc_address001 = test_addy.get_btc_address("war-pig")
-            btc_address002 = test_addy.get_btc_address2("war-pig")
+            btc_address001 = test_addy.make_btc_address("war-pig")
+            btc_address002 = test_addy.make_btc_address2("war-pig")
             assert isinstance(btc_address001,object)
             assert isinstance(btc_address002, object)
             self.assertEqual(btc_address001, btc_address002)
