@@ -32,8 +32,8 @@ class BTCAddress():
         now = time.time()
         return time.strftime('%Y%m%d%H%M%S', time.gmtime(now)) + ('%03d' % int((now - int(now)) * 1000))
 
-    def __get_privatekey(self, data):
-        return int(hashlib.sha256(data).hexdigest(), 16)
+    def __get_privatekey(v):
+        return int(hashlib.sha256(v).hexdigest(), 16)
 
     def __base58_encode(self, v):
         l = []
@@ -57,6 +57,8 @@ class BTCAddress():
 
         return self.__b58_digits[0] + encode
 
+    def get_hashdata(self, d):
+        return ''
 
     def get_btc_address(self, data):
         ts_data = data  # + self.__get_timestamp();
@@ -114,26 +116,3 @@ class BTCAddress():
         '''
 
         return self.__base58_encode2(int(pubkey_006, 16))
-
-        # def __base58_check_encoding2(self, v):
-        #    alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-        #    iseq = lambda s: s
-        #    bseq = bytes
-        #    buffer = lambda s: s.buffer
-
-        #    origlen = len(v)
-        #    v = v.lstrip(str('\0'))
-        #    newlen = len(v)
-
-        #    p, acc = 1, 0
-        #    print(type(p))
-        #    for c in iseq(v[::-1]):
-        #        acc += p * int(c)
-        #        p = p << 8
-
-        #   result = ''
-        #    while acc >= 58:
-        #        acc, mod = divmod(acc, 58)
-        #        result += alphabet[mod]
-
-        #   return (result + alphabet[acc] + alphabet[0] * (origlen - newlen))[::-1]
