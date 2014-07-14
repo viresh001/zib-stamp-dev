@@ -57,15 +57,9 @@ class BTCAddress():
 
         return self.__b58_digits[0] + encode
 
-    def get_hashdata(self, d):
-        return ''
+    def __hashdata(self, d):
+        pko = ecdsa.SigningKey.from_secret_exponent(d, self.__secp256k1)
 
-    def get_btc_address(self, data):
-        ts_data = data  # + self.__get_timestamp();
-        e_data = ts_data.encode(self.__encode_type)
-        private_key = self.__get_privatekey(e_data)
-
-        pko = ecdsa.SigningKey.from_secret_exponent(private_key, self.__secp256k1)
         pubkey_001 = binascii.hexlify(pko.get_verifying_key().to_string())
         pubkey_002 = hashlib.sha256(binascii.unhexlify(str.encode('04', self.__encode_type) + pubkey_001)).hexdigest()
 
@@ -76,18 +70,16 @@ class BTCAddress():
 
         pubkey_006 = pubkey_003 + pubkey_005[:8]
 
+        return int(pubkey_006, 16)
 
-        '''
-        print(pko.to_string())
-        print(pubkey_001)
-        print(pubkey_002)
-        print(pubkey_003)
-        print(pubkey_004)
-        print(pubkey_005)
-        print(pubkey_006)
-        '''
+    def get_btc_address(self, data):
+        ts_data = data  # + self.__get_timestamp();
+        e_data = ts_data.encode(self.__encode_type)
+        private_key = self.__get_privatekey(e_data)
 
-        return self.__base58_encode(int(pubkey_006, 16))
+        hash_key = self.__hashdata(private_key)
+
+        return self.__base58_encode(hash_key)
 
     def get_btc_address2(self, data):
         ts_data = data  # + self.__get_timestamp();
@@ -104,15 +96,5 @@ class BTCAddress():
         pubkey_005 = hashlib.sha256(binascii.unhexlify(pubkey_004)).hexdigest()
 
         pubkey_006 = pubkey_003 + pubkey_005[:8]
-
-        '''
-        print(pko.to_string())
-        print(pubkey_001)
-        print(pubkey_002)
-        print(pubkey_003)
-        print(pubkey_004)
-        print(pubkey_005)
-        print(pubkey_006)
-        '''
 
         return self.__base58_encode2(int(pubkey_006, 16))
