@@ -7,7 +7,7 @@ import urllib.parse
 import urllib.request
 
 
-class BTCAddress:
+class BTCAddress():
     __nonce_v = ''
     __encode_type = 'utf-8'
     __secp256k1_curve = ecdsa.ellipticcurve.CurveFp(
@@ -19,11 +19,10 @@ class BTCAddress:
     __secp256k1 = ecdsa.curves.Curve('secp256k1', __secp256k1_curve, __secp256k1_point, (1, 3, 132, 0, 10))
 
     __b58_digits = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-
+    __b58_len = len(__b58_digits)
 
     def __init__(self):
         print("constructor")
-
 
     def __nonce(self):
         self.__nonce_v = '{:.10f}'.format(time.time() * 1000).split('.')[0]
@@ -36,38 +35,31 @@ class BTCAddress:
     def __get_privatekey(self, data):
         return int(hashlib.sha256(data).hexdigest(), 16)
 
-    def __base58_check_encoding2(self, v):
-        alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-        iseq = lambda s: s
-        bseq = bytes
-        buffer = lambda s: s.buffer
-
-        origlen = len(v)
-        v = v.lstrip(str('\0'))
-        newlen = len(v)
-
-        p, acc = 1, 0
-        print(type(p))
-        for c in iseq(v[::-1]):
-            acc += p * int(c)
-            p = p << 8
-
-        result = ''
-        while acc >= 58:
-            acc, mod = divmod(acc, 58)
-            result += alphabet[mod]
-
-        return (result + alphabet[acc] + alphabet[0] * (origlen - newlen))[::-1]
-
-    def __base58_check_encoding(self, v):
+    def __base58_encode(self, v):
         l = []
         while v > 0:
             v, r = divmod(v, 58)
-            l.insert(0,(self.__b58_digits[r]))
+            l.insert(0, (self.__b58_digits[r]))
         return self.__b58_digits[0] + ''.join(l)
 
-    def generate_address(self, data):
-        ts_data = data + self.__get_timestamp();
+    def __base58_encode2(self, v):
+        if (v < 0):
+            return ''
+
+        encode = ''
+
+        while (v > self.__b58_len):
+            v, mod = divmod(v, self.__b58_len)
+            encode = self.__b58_digits[mod] + encode
+
+        if v > 0:
+            encode = self.__b58_digits[v] + encode
+
+        return self.__b58_digits[0] + encode
+
+
+    def get_btc_address(self, data):
+        ts_data = data  # + self.__get_timestamp();
         e_data = ts_data.encode(self.__encode_type)
         private_key = self.__get_privatekey(e_data)
 
@@ -82,17 +74,8 @@ class BTCAddress:
 
         pubkey_006 = pubkey_003 + pubkey_005[:8]
 
-        print("pubkey006")
-        print(int(pubkey_006, 16))
 
-        pubkey_007 = str(int(pubkey_006, 16))
-
-
-
-        btc_address = self.__base58_check_encoding(int(pubkey_006, 16))
-        btc_address2 = self.__base58_check_encoding2(pubkey_007)
-
-
+        '''
         print(pko.to_string())
         print(pubkey_001)
         print(pubkey_002)
@@ -100,6 +83,57 @@ class BTCAddress:
         print(pubkey_004)
         print(pubkey_005)
         print(pubkey_006)
-        print(pubkey_007)
-        print(btc_address)
-        print(btc_address2)
+        '''
+
+        return self.__base58_encode(int(pubkey_006, 16))
+
+    def get_btc_address2(self, data):
+        ts_data = data  # + self.__get_timestamp();
+        e_data = ts_data.encode(self.__encode_type)
+        private_key = self.__get_privatekey(e_data)
+
+        pko = ecdsa.SigningKey.from_secret_exponent(private_key, self.__secp256k1)
+        pubkey_001 = binascii.hexlify(pko.get_verifying_key().to_string())
+        pubkey_002 = hashlib.sha256(binascii.unhexlify(str.encode('04', self.__encode_type) + pubkey_001)).hexdigest()
+
+        pubkey_003 = hashlib.new('ripemd160', binascii.unhexlify(pubkey_002)).hexdigest()
+
+        pubkey_004 = hashlib.sha256(binascii.unhexlify('00' + pubkey_003)).hexdigest()
+        pubkey_005 = hashlib.sha256(binascii.unhexlify(pubkey_004)).hexdigest()
+
+        pubkey_006 = pubkey_003 + pubkey_005[:8]
+
+        '''
+        print(pko.to_string())
+        print(pubkey_001)
+        print(pubkey_002)
+        print(pubkey_003)
+        print(pubkey_004)
+        print(pubkey_005)
+        print(pubkey_006)
+        '''
+
+        return self.__base58_encode2(int(pubkey_006, 16))
+
+        # def __base58_check_encoding2(self, v):
+        #    alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+        #    iseq = lambda s: s
+        #    bseq = bytes
+        #    buffer = lambda s: s.buffer
+
+        #    origlen = len(v)
+        #    v = v.lstrip(str('\0'))
+        #    newlen = len(v)
+
+        #    p, acc = 1, 0
+        #    print(type(p))
+        #    for c in iseq(v[::-1]):
+        #        acc += p * int(c)
+        #        p = p << 8
+
+        #   result = ''
+        #    while acc >= 58:
+        #        acc, mod = divmod(acc, 58)
+        #        result += alphabet[mod]
+
+        #   return (result + alphabet[acc] + alphabet[0] * (origlen - newlen))[::-1]
