@@ -32,7 +32,7 @@ class BTCAddress():
         now = time.time()
         return time.strftime('%Y%m%d%H%M%S', time.gmtime(now)) + ('%03d' % int((now - int(now)) * 1000))
 
-    def __get_privatekey(v):
+    def __get_privatekey(self, v):
         return int(hashlib.sha256(v).hexdigest(), 16)
 
     def __base58_encode(self, v):
