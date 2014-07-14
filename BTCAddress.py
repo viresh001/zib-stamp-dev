@@ -1,13 +1,8 @@
-import os
-import sys, getopt
 import time
 import binascii, ecdsa, hashlib
 
-import urllib.parse
-import urllib.request
-
-
 class BTCAddress():
+    __timestamp = ''
     __nonce_v = ''
     __encode_type = 'utf-8'
     __secp256k1_curve = ecdsa.ellipticcurve.CurveFp(
@@ -22,17 +17,25 @@ class BTCAddress():
     __b58_len = len(__b58_digits)
 
     def __init__(self):
-        print("constructor")
+        now = time.time()
+        ts= time.strftime('%Y%m%d%H%M%S', time.gmtime(now)) + ('%03d' % int((now - int(now)) * 1000))
+        self.timestamp = ts
+        print(self.timestamp)
 
-    def __nonce(self):
+    @property
+    def timestamp(self):
+        return self.__timestamp
+
+    @timestamp.setter
+    def timestamp(self, v):
+        self.__timestamp = v
+
+    def __make_nonce(self, v):
         self.__nonce_v = '{:.10f}'.format(time.time() * 1000).split('.')[0]
         print("nonce: " + self.__nonce_v)
+        return self.__nonce_v
 
-    def __get_timestamp(self):
-        now = time.time()
-        return time.strftime('%Y%m%d%H%M%S', time.gmtime(now)) + ('%03d' % int((now - int(now)) * 1000))
-
-    def __get_privatekey(self, v):
+    def __make_privatekey(self, v):
         return int(hashlib.sha256(v).hexdigest(), 16)
 
     def __base58_encode(self, v):
@@ -48,17 +51,18 @@ class BTCAddress():
 
         encode = ''
 
-        while (v > self.__b58_len):
+        while (v >= self.__b58_len):
             v, mod = divmod(v, self.__b58_len)
             encode = self.__b58_digits[mod] + encode
 
         if v > 0:
+            print("v", v)
             encode = self.__b58_digits[v] + encode
 
         return self.__b58_digits[0] + encode
 
-    def __hashdata(self, d):
-        pko = ecdsa.SigningKey.from_secret_exponent(d, self.__secp256k1)
+    def __hash_key(self, k):
+        pko = ecdsa.SigningKey.from_secret_exponent(k, self.__secp256k1)
 
         pubkey_001 = binascii.hexlify(pko.get_verifying_key().to_string())
         pubkey_002 = hashlib.sha256(binascii.unhexlify(str.encode('04', self.__encode_type) + pubkey_001)).hexdigest()
@@ -73,18 +77,18 @@ class BTCAddress():
         return int(pubkey_006, 16)
 
     def get_btc_address(self, data):
-        ts_data = data  # + self.__get_timestamp();
+        ts_data = data  + self.timestamp
         e_data = ts_data.encode(self.__encode_type)
-        private_key = self.__get_privatekey(e_data)
+        private_key = self.__make_privatekey(e_data)
 
-        hash_key = self.__hashdata(private_key)
+        hash_key = self.__hash_key(private_key)
 
         return self.__base58_encode(hash_key)
 
     def get_btc_address2(self, data):
-        ts_data = data  # + self.__get_timestamp();
+        ts_data = data  + self.timestamp
         e_data = ts_data.encode(self.__encode_type)
-        private_key = self.__get_privatekey(e_data)
+        private_key = self.__make_privatekey(e_data)
 
         pko = ecdsa.SigningKey.from_secret_exponent(private_key, self.__secp256k1)
         pubkey_001 = binascii.hexlify(pko.get_verifying_key().to_string())
