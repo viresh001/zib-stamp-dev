@@ -39,13 +39,6 @@ class BTCAddress():
         return int(hashlib.sha256(v).hexdigest(), 16)
 
     def __base58_encode(self, v):
-        l = []
-        while v > 0:
-            v, r = divmod(v, 58)
-            l.insert(0, (self.__b58_digits[r]))
-        return self.__b58_digits[0] + ''.join(l)
-
-    def __base58_encode2(self, v):
         if (v < 0):
             return ''
 
@@ -84,21 +77,3 @@ class BTCAddress():
         hash_key = self.__hash_key(private_key)
 
         return self.__base58_encode(hash_key)
-
-    def make_btc_address2(self, data):
-        ts_data = data  + self.timestamp
-        e_data = ts_data.encode(self.__encode_type)
-        private_key = self.__make_privatekey(e_data)
-
-        pko = ecdsa.SigningKey.from_secret_exponent(private_key, self.__secp256k1)
-        pubkey_001 = binascii.hexlify(pko.get_verifying_key().to_string())
-        pubkey_002 = hashlib.sha256(binascii.unhexlify(str.encode('04', self.__encode_type) + pubkey_001)).hexdigest()
-
-        pubkey_003 = hashlib.new('ripemd160', binascii.unhexlify(pubkey_002)).hexdigest()
-
-        pubkey_004 = hashlib.sha256(binascii.unhexlify('00' + pubkey_003)).hexdigest()
-        pubkey_005 = hashlib.sha256(binascii.unhexlify(pubkey_004)).hexdigest()
-
-        pubkey_006 = pubkey_003 + pubkey_005[:8]
-
-        return self.__base58_encode2(int(pubkey_006, 16))
