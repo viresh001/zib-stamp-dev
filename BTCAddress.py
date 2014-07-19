@@ -20,7 +20,6 @@ class BTCAddress():
         now = time.time()
         ts= time.strftime('%Y%m%d%H%M%S', time.gmtime(now)) + ('%03d' % int((now - int(now)) * 1000))
         self.timestamp = ts
-        print(self.timestamp)
 
     @property
     def timestamp(self):
@@ -49,7 +48,6 @@ class BTCAddress():
             encode = self.__b58_digits[mod] + encode
 
         if v > 0:
-            print("v", v)
             encode = self.__b58_digits[v] + encode
 
         return self.__b58_digits[0] + encode
@@ -69,12 +67,9 @@ class BTCAddress():
 
         return int(pubkey_006, 16)
 
-    def make_btc_address(self, data):
-        print(type(data))
-        print(type(self.timestamp))
-        ts_data = data#.encode  #+ self.timestamp
-        #e_data = ts_data.encode(self.__encode_type)
-        private_key = self.__make_privatekey(ts_data)
+    def make_btc_address(self, d):
+
+        private_key = self.__make_privatekey(d)
 
         hash_key = self.__hash_key(private_key)
 
