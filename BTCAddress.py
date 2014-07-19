@@ -69,7 +69,7 @@ class BTCAddress():
 
     def make_btc_address(self, d):
 
-        private_key = self.__make_privatekey(d)
+        private_key = self.__make_privatekey(d + self.__timestamp.encode(self.__encode_type))
 
         hash_key = self.__hash_key(private_key)
 
