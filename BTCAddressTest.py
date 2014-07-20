@@ -5,7 +5,7 @@ import Blockchain
 
 class BTCAddressTest(unittest.TestCase):
 
-    count_max = 16
+    count_max = 32
     asset_name = 'scratch'
 
     def test_btc_address(self):
@@ -17,11 +17,11 @@ class BTCAddressTest(unittest.TestCase):
 
         while test_count < self.count_max:
             test_addy = BTCAddress.BTCAddress()
-            ba = test_addy.make_btc_address(asset_content)
-            assert isinstance(ba, object)
-            self.assertIsInstance(ba, object)
-            print('test#', test_count, 'timestamp:', test_addy.timestamp, 'address001:', ba)
 
+            ba = test_addy.make_btc_address(asset_content)
+            self.assertIsInstance(ba, str)
+
+            print('test#', test_count, 'timestamp:', test_addy.timestamp, 'address001:', ba)
 
             bc = Blockchain.Blockchain()
 
