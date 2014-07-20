@@ -5,7 +5,7 @@ import Blockchain
 
 class BTCAddressTest(unittest.TestCase):
 
-    count_max = 100
+    count_max = 16
     asset_name = 'scratch'
 
     def test_btc_address(self):
