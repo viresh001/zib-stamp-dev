@@ -6,7 +6,6 @@ class BTCAddress():
 
     @property
     def timestamp(self):
-        """assert isinstance(self.__timestamp, object"""
         return self.__timestamp
 
     @timestamp.setter
@@ -83,6 +82,10 @@ class BTCAddress():
 
         private_key = self.__make_privatekey(d + self.timestamp.encode(self.encode_type))
 
+        assert isinstance(private_key, int)
+
         hash_key = self.__hash_key(private_key)
+
+        assert isinstance(hash_key, int)
 
         return self.__base58_encode(hash_key)
