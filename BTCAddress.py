@@ -80,7 +80,9 @@ class BTCAddress():
 
     def make_btc_address(self, d):
 
-        private_key = self.__make_privatekey(d + self.timestamp.encode(self.encode_type))
+        data = d + self.timestamp.encode(self.encode_type)
+
+        private_key = self.__make_privatekey(data)
 
         assert isinstance(private_key, int)
 
